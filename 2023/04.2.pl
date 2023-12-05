@@ -2,7 +2,8 @@
 
 sub trim { my $s = shift; $s =~ s/^\s+|\s+$//g; return $s };
 
-$sum = 0;
+$card = 1;
+@card_count = ();
 while (<>) {
   my @gs = split /:/, $_;
   my @cs = split /\|/, @gs[1];
@@ -16,18 +17,23 @@ while (<>) {
     }
   }
 
-  $score = 0;
+  $c = 0;
   foreach ( @game_numbers ) {
     if (exists $wm{int($_)}) {
-      if ($score == 0) {
-        $score++
-      } else {
-        $score = $score * 2;
-      }
+      $c++;
     }
   }
 
-  $sum += $score;
+  @card_count[$card]++;
+  for (my $i = 1; $i <= $c; $i++) {
+    @card_count[$card+$i] = @card_count[$card+$i] + @card_count[$card];
+  }
+  $card++;
+}
+
+$sum = 0;
+for (my $i = 1; $i <= $#card_count; $i++) {
+  $sum += $card_count[$i];
 }
 
 print($sum);
